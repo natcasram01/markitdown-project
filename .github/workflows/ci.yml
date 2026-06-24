@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check syntax (all Python files)
+        run: python -m py_compile main.py
+
+      - name: Check imports
+        run: python -c "import main"
+
+      - name: Verify templates exist
+        run: |
+          test -f templates/base.html
+          test -f templates/index.html
+          test -f templates/converter.html
+          test -f templates/privacy.html
+          test -f templates/terms.html
+          echo "All templates exist"
+
+      - name: Verify static files exist
+        run: |
+          test -f static/css/style.css
+          test -f static/icons/pdf.svg
+          test -f static/icons/word.svg
+          test -f static/icons/excel.svg
+          test -f static/icons/ppt.svg
+          echo "All static files exist"
