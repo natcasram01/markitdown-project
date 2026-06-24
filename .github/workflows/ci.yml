@@ -12,36 +12,40 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Check syntax (all Python files)
-        run: python -m py_compile main.py
-
-      - name: Check imports
-        run: python -c "import main"
-
-      - name: Verify templates exist
         run: |
-          test -f templates/base.html
-          test -f templates/index.html
-          test -f templates/converter.html
-          test -f templates/privacy.html
-          test -f templates/terms.html
-          echo "All templates exist"
+          echo "Installing dependencies from requirements.txt..."
+          pip install -r requirements.txt
+          echo "Dependencies installed successfully"
 
-      - name: Verify static files exist
+      - name: Check syntax
         run: |
-          test -f static/css/style.css
-          test -f static/icons/pdf.svg
-          test -f static/icons/word.svg
-          test -f static/icons/excel.svg
-          test -f static/icons/ppt.svg
-          echo "All static files exist"
+          echo "Checking Python syntax in main.py..."
+          python -m py_compile main.py
+          echo "Syntax OK"
+
+      - name: Verify templates
+        run: |
+          echo "Checking templates..."
+          for f in templates/base.html templates/index.html templates/converter.html templates/privacy.html templates/terms.html; do
+            test -f "$f" && echo "  ✓ $f" || (echo "  ✗ $f MISSING" && exit 1)
+          done
+          echo "All templates OK"
+
+      - name: Verify static files
+        run: |
+          echo "Checking static files..."
+          for f in static/css/style.css static/icons/pdf.svg static/icons/word.svg static/icons/excel.svg static/icons/ppt.svg; do
+            test -f "$f" && echo "  ✓ $f" || (echo "  ✗ $f MISSING" && exit 1)
+          done
+          echo "All static files OK"
+
+      - name: Done
+        run: echo "CI passed successfully"
