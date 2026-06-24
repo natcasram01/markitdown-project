@@ -8,10 +8,19 @@ from fastapi.templating import Jinja2Templates
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request as StarletteRequest
 from markitdown import MarkItDown
 from dotenv import load_dotenv
 
 load_dotenv()
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost")
+MAX_UPLOAD_SIZE = int(os.getenv("MAX_UPLOAD_SIZE", "20971520"))
+RATE_LIMIT = os.getenv("RATE_LIMIT", "10/minute")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "error")
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000").split(",")
 
 SEO_PAGES = {
     "pdf": {
@@ -74,6 +83,37 @@ app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: StarletteRequest, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://plausible.io; "
+            "style-src 'self' 'unsafe-inline'; "
+            "font-src 'self'; "
+            "img-src 'self' data:; "
+            "connect-src 'self' https://plausible.io; "
+            "frame-ancestors 'none';"
+        )
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
+
 # Static files y templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -101,7 +141,26 @@ def sanitize_filename(filename: str) -> str:
     filename = os.path.basename(filename)
     filename = re.sub(r"[^\w\s\-.]", "", filename)
     filename = filename.strip()
+    filename = filename[:255]
     return filename or "archivo"
+
+
+def validate_content_safety(content: bytes, ext: str) -> None:
+    """Comprueba firmas de archivo para verificar que coinciden
+    con la extensión declarada."""
+    signatures = {
+        ".pdf":  [b"%PDF"],
+        ".docx": [b"PK\x03\x04"],
+        ".xlsx": [b"PK\x03\x04"],
+        ".xls":  [b"\xd0\xcf\x11\xe0"],
+        ".pptx": [b"PK\x03\x04"],
+    }
+    expected = signatures.get(ext, [])
+    if expected and not any(content.startswith(sig) for sig in expected):
+        raise HTTPException(
+            status_code=400,
+            detail="El contenido del archivo no coincide con su extensión."
+        )
 
 
 def validate_file(file: UploadFile, content: bytes) -> str:
@@ -165,7 +224,7 @@ async def seo_page(request: Request, filetype: str):
 
 
 @app.post("/convert")
-@limiter.limit("10/minute")
+@limiter.limit(RATE_LIMIT)
 async def convert(request: Request, file: UploadFile = File(...)):
     """
     Convierte un archivo a Markdown.
@@ -176,6 +235,7 @@ async def convert(request: Request, file: UploadFile = File(...)):
     content = await file.read()
 
     ext = validate_file(file, content)
+    validate_content_safety(content, ext)
 
     try:
         md = MarkItDown()
@@ -200,4 +260,11 @@ async def convert(request: Request, file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "8000")),
+        reload=False,
+        access_log=False,
+        log_level=LOG_LEVEL,
+    )
