@@ -4,3 +4,4 @@ python-multipart
 markitdown[all]
 slowapi
 python-dotenv
+jinja2
