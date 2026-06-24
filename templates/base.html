@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MarkDownConverter{% endblock %}</title>
+    {% block meta_description %}<meta name="description" content="Convert PDF, DOCX, PPTX and XLSX files to clean Markdown instantly. No signup, no storage. Privacy-focused and free.">{% endblock %}
+    {% block canonical %}{% endblock %}
+    <link rel="icon" type="image/png" href="/static/icons/letra-m.png">
+    <link rel="shortcut icon" href="/static/icons/letra-m.png">
+    <link rel="stylesheet" href="/static/css/inter.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            height: 60px;
+            background: rgba(248, 250, 252, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,.07);
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 18px;
+            color: #4338ca;
+        }
+        .header-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* ── Main content ── */
+        main {
+            padding-top: 80px;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            text-align: center;
+            padding: 72px 24px 56px;
+        }
+        .hero h1 {
+            font-size: 60px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .hero h2 {
+            font-size: 20px;
+            font-weight: 400;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 16px;
+            color: #64748b;
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ── Upload card ── */
+        .upload-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 56px;
+        }
+        .upload-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            padding: 48px 40px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .upload-card.drag-over {
+            border-color: #4338ca;
+            box-shadow: 0 4px 32px rgba(67,56,202,.15);
+        }
+        #file-input { display: none; }
+
+        .upload-icon {
+            margin: 0 auto 20px;
+            width: 56px; height: 56px;
+            color: #94a3b8;
+        }
+        .upload-main-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .upload-sub-text {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .upload-warning {
+            font-size: 12px;
+            color: #f59e0b;
+            margin-bottom: 20px;
+        }
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #e6e8ea;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: .04em;
+        }
+
+        /* ── Spinner ── */
+        .spinner-wrap {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 0;
+            color: #4338ca;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .spinner {
+            width: 22px; height: 22px;
+            border: 3px solid #e0e7ff;
+            border-top-color: #4338ca;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Toast ── */
+        #toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.12);
+            font-size: 15px;
+            color: #191c1e;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+        }
+        #toast.show {
+            animation: toastIn 0.3s ease forwards;
+        }
+        #toast.hide {
+            animation: toastOut 0.3s ease forwards;
+        }
+        @keyframes toastIn {
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to   { opacity: 0; transform: translateX(-50%) translateY(16px); }
+        }
+
+        /* ── Error ── */
+        .error-msg {
+            display: none;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #b91c1c;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        /* ── Preview section ── */
+        .preview-section {
+            display: none;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px 56px;
+        }
+        .preview-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .preview-actions { display: flex; gap: 10px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background .15s, opacity .15s;
+        }
+        .btn-indigo {
+            background: #4338ca;
+            color: #fff;
+        }
+        .btn-indigo:hover { background: #3730a3; }
+        .btn-ghost {
+            background: #f1f5f9;
+            color: #334155;
+        }
+        .btn-ghost:hover { background: #e2e8f0; }
+
+        .preview-body {
+            padding: 24px;
+        }
+        #preview-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #334155;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 420px;
+            overflow: hidden;
+            transition: max-height .3s ease;
+        }
+        #preview-text.expanded { max-height: none; }
+        .show-more-wrap {
+            text-align: center;
+            padding: 16px 0 4px;
+        }
+
+        /* ── Bento grid ── */
+        .bento-grid {
+            max-width: 976px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            padding: 0 24px 56px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        .bento-card {
+            border-radius: 16px;
+            padding: 36px 32px;
+        }
+        .bento-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        .bento-card p {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.7;
+        }
+        .bento-left { background: #eceef0; }
+        .bento-right { background: #e6e8ea; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .bento-badge {
+            display: inline-block;
+            background: #4338ca;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 38px; }
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 28px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: #94a3b8;
+            width: 100%;
+        }
+        footer a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        footer a:hover { color: #4338ca; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-copy a { color: #94a3b8; }
+    </style>
+    {% block extra_styles %}{% endblock %}
+    {% block schema %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+    <a href="/" class="logo" style="text-decoration:none;color:inherit;">MarkDownConverter</a>
+    <span class="header-subtitle">Markdown Converter</span>
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+    <div class="footer-links" style="flex-direction: column; align-items: flex-start;">
+        <div style="display:flex; gap:20px;">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+        </div>
+        <p style="font-size:13px; color:#94a3b8; text-align:left; margin-top:8px;">This service is an independent project and is not affiliated with, endorsed by, or sponsored by Microsoft.</p>
+    </div>
+    <span class="footer-copy">© 2026 MarkItDown. Powered by <a href="https://github.com/microsoft/markitdown" target="_blank" rel="noopener" style="color:#4338ca;text-decoration:underline">Microsoft MarkItDown</a>.<br>
+    Microsoft MarkItDown © Microsoft Corporation, licensed under the MIT License.</span>
+    <div style="width:100%; border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 24px;">
+        <p style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing: 0.08em; text-transform:uppercase; margin-bottom:12px;">Open Source Licenses</p>
+        <div style="background:#f8fafc; border-radius:8px; padding:20px 24px; width:100%;">
+            <p style="font-size:13px; font-weight:600; color:#464554; margin-bottom:8px;">MIT License</p>
+            <p style="font-size:13px; font-weight:600; color:#464554; margin-bottom:16px;">Copyright © Microsoft Corporation.</p>
+            <p style="font-size:13px; color:#64748b; line-height:22px; margin-bottom:12px;">
+                Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+            </p>
+            <p style="font-size:13px; color:#64748b; line-height:22px; margin-bottom:12px;">
+                The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+            </p>
+            <p style="font-size:13px; color:#64748b; line-height:22px;">
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            </p>
+        </div>
+    </div>
+    <p style="font-size:11px; color:#94a3b8; width:100%; margin-top:16px;">Icons designed by <a href="https://www.flaticon.es/autores/fathema-khanom" title="Fathema Khanom" target="_blank" rel="noopener" style="color:#94a3b8;">Fathema Khanom</a> from <a href="https://www.flaticon.es/" title="Flaticon" target="_blank" rel="noopener" style="color:#94a3b8;">www.flaticon.es</a></p>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

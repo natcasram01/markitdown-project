@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service — MarkDownConverter{% endblock %}
+
+{% block extra_styles %}
+<style>
+    body { background: #fff; }
+    main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 120px 24px 80px;
+    }
+    .page-title {
+        font-size: 36px;
+        font-weight: 700;
+        color: #191c1e;
+        margin-bottom: 8px;
+    }
+    .page-date {
+        font-size: 14px;
+        color: #94a3b8;
+        margin-bottom: 48px;
+    }
+    .terms-section {
+        margin-bottom: 32px;
+    }
+    .terms-section h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #191c1e;
+        margin-bottom: 10px;
+    }
+    .terms-section p {
+        font-size: 15px;
+        font-weight: 400;
+        color: #464554;
+        line-height: 24px;
+        margin-bottom: 10px;
+    }
+    .terms-section p:last-child { margin-bottom: 0; }
+    .terms-section a {
+        color: #4338ca;
+        text-decoration: underline;
+    }
+    .terms-section ul {
+        font-size: 15px;
+        color: #464554;
+        line-height: 24px;
+        padding-left: 20px;
+        margin: 8px 0 10px;
+    }
+    .terms-section ul li { margin-bottom: 6px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="page-title">Terms of Service</h1>
+    <p class="page-date">Last updated: 2026</p>
+
+    <div class="terms-section">
+        <h2>Acceptance of Terms</h2>
+        <p>By accessing or using this service, you agree to be bound by these Terms of Service. If you do not agree, you must not use the service.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Description of the Service</h2>
+        <p>This service provides automated file-to-Markdown conversion.</p>
+        <p>The service is provided on a best-effort basis and may not be error-free or suitable for all use cases.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Independent Service Disclaimer</h2>
+        <p>This service is an independent project and is not affiliated with, endorsed by, or sponsored by Microsoft.</p>
+        <p>Microsoft MarkItDown is used as an open-source component under the MIT License.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>User Responsibilities</h2>
+        <p>You agree that you:</p>
+        <ul>
+            <li>Will not upload malicious files or code</li>
+            <li>Will not upload content that is illegal or infringes third-party rights</li>
+            <li>Are solely responsible for the content you upload</li>
+        </ul>
+        <p>You must not attempt to abuse, disrupt, or overload the service.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Intellectual Property</h2>
+        <p>You retain full ownership of any files you upload.</p>
+        <p>By using the service, you grant a limited, temporary right to process your files solely for the purpose of providing the conversion.</p>
+        <p>We do not claim ownership over user content.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Data Processing</h2>
+        <p>File processing is performed transiently in memory and is not stored after conversion.</p>
+        <p>Further details are provided in the Privacy Policy.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>No Warranty</h2>
+        <p>The service is provided "as is" and "as available", without warranties of any kind.</p>
+        <p>We do not guarantee:</p>
+        <ul>
+            <li>Accuracy of conversion results</li>
+            <li>Availability of the service</li>
+            <li>Absence of errors</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h2>Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, the service provider shall not be liable for:</p>
+        <ul>
+            <li>Data loss</li>
+            <li>Conversion errors</li>
+            <li>Indirect or consequential damages</li>
+            <li>Business interruption</li>
+        </ul>
+        <p>Use of the service is at your own risk.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Service Availability</h2>
+        <p>We reserve the right to:</p>
+        <ul>
+            <li>Modify the service</li>
+            <li>Suspend access</li>
+            <li>Discontinue the service</li>
+        </ul>
+        <p>at any time without prior notice.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Abuse and Rate Limiting</h2>
+        <p>We may implement technical measures (such as rate limiting) to prevent abuse.</p>
+        <p>We reserve the right to block access in case of misuse.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Third-Party Services</h2>
+        <p>The service relies on third-party infrastructure, including:</p>
+        <ul>
+            <li>Railway (hosting)</li>
+            <li>Plausible Analytics (if enabled)</li>
+        </ul>
+        <p>We are not responsible for third-party service availability or behavior.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Open Source Attribution</h2>
+        <p>This service uses Microsoft MarkItDown, © Microsoft Corporation, licensed under the MIT License.</p>
+        <p>The full license text is available in the Open Source Licenses section.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Governing Law</h2>
+        <p>These Terms shall be governed by the laws of Spain.</p>
+        <p>Any disputes shall be subject to the jurisdiction of the courts of Spain.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>Changes to Terms</h2>
+        <p>We may update these Terms at any time. Continued use of the service constitutes acceptance of the updated Terms.</p>
+    </div>
+
+{% endblock %}

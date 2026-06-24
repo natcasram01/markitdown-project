@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — MarkDownConverter{% endblock %}
+
+{% block extra_styles %}
+<style>
+    body { background: #fff; }
+    main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 120px 24px 80px;
+    }
+    .page-title {
+        font-size: 36px;
+        font-weight: 700;
+        color: #191c1e;
+        margin-bottom: 8px;
+    }
+    .page-date {
+        font-size: 14px;
+        color: #94a3b8;
+        margin-bottom: 48px;
+    }
+    .policy-section {
+        margin-bottom: 32px;
+    }
+    .policy-section h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #191c1e;
+        margin-bottom: 10px;
+    }
+    .policy-section p {
+        font-size: 15px;
+        font-weight: 400;
+        color: #464554;
+        line-height: 24px;
+        margin-bottom: 10px;
+    }
+    .policy-section p:last-child { margin-bottom: 0; }
+    .policy-section ul {
+        font-size: 15px;
+        color: #464554;
+        line-height: 24px;
+        padding-left: 20px;
+        margin: 8px 0 10px;
+    }
+    .policy-section ul li { margin-bottom: 4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="page-date">Last updated: 2026</p>
+
+    <div class="policy-section">
+        <h2>Data Controller</h2>
+        <p>The data controller responsible for this service is:</p>
+        <p>MarkDownConverter<br>Contact: contact@yourdomain.com</p>
+        <p>If you have any questions regarding this Privacy Policy, you may contact us using the email above.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Description of the Service</h2>
+        <p>This service provides file-to-Markdown conversion using automated processing powered by Microsoft MarkItDown.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Data Processing</h2>
+        <p>Files uploaded by users are processed transiently in memory for the sole purpose of conversion.</p>
+        <ul>
+            <li>Files are not stored on disk</li>
+            <li>Files are not saved in databases</li>
+            <li>Files are not retained after processing</li>
+        </ul>
+        <p>Once the conversion is completed, all file data is automatically discarded.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Personal Data</h2>
+        <p>We do not require user accounts, registration, or direct submission of personal data.</p>
+        <p>However, limited technical data may be processed as part of operating the service, including:</p>
+        <ul>
+            <li>IP address</li>
+            <li>Request metadata (e.g., timestamps, request size)</li>
+        </ul>
+        <p>This data is not used to identify users and is not combined with other data sources.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Legal Basis (GDPR)</h2>
+        <p>Processing of uploaded files is based on Article 6(1)(f) GDPR (legitimate interests), specifically to provide the file conversion service requested by the user.</p>
+        <p>Processing of limited technical data is also based on legitimate interest, for the purposes of ensuring service security, preventing abuse, and maintaining system integrity.</p>
+        <p>These interests are not overridden by the rights and freedoms of users, as:</p>
+        <ul>
+            <li>Files are processed transiently and not stored</li>
+            <li>No profiling or tracking is performed</li>
+            <li>Appropriate technical safeguards are implemented</li>
+        </ul>
+    </div>
+
+    <div class="policy-section">
+        <h2>Infrastructure and Hosting</h2>
+        <p>This service is hosted on Railway.</p>
+        <p>Railway may process certain technical data, such as IP addresses, at the infrastructure level for security and operational purposes. Such processing is subject to Railway's own privacy practices and retention policies.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Error Logging</h2>
+        <p>Application logs are limited to critical errors.</p>
+        <p>In rare cases of system errors, limited portions of uploaded file content may be temporarily included in error logs for debugging purposes.</p>
+        <p>These logs:</p>
+        <ul>
+            <li>Are restricted in access</li>
+            <li>Are automatically rotated</li>
+            <li>Are not used for any purpose other than maintaining the service</li>
+        </ul>
+    </div>
+
+    <div class="policy-section">
+        <h2>Analytics</h2>
+        <p>This service may use privacy-friendly analytics (such as Plausible Analytics) to collect aggregated, anonymized usage data.</p>
+        <ul>
+            <li>No cookies are used for tracking</li>
+            <li>No personal data is collected for analytics purposes</li>
+            <li>No cross-site tracking is performed</li>
+        </ul>
+        <p>Analytics data is used solely to understand general usage patterns (e.g., number of conversions, file types used).</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Data Retention</h2>
+        <ul>
+            <li>Uploaded files: not stored</li>
+            <li>Application logs: retained for a limited period (e.g., up to 7 days via infrastructure provider)</li>
+            <li>Analytics data: aggregated and anonymized</li>
+        </ul>
+    </div>
+
+    <div class="policy-section">
+        <h2>Data Sharing</h2>
+        <p>We do not sell, share, or disclose user data to third parties.</p>
+        <p>Data may be processed by:</p>
+        <ul>
+            <li>Railway (hosting infrastructure)</li>
+            <li>Plausible Analytics (aggregated analytics, if enabled)</li>
+        </ul>
+        <p>No other third-party processing takes place.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>International Data Transfers</h2>
+        <p>Depending on the infrastructure provider, technical data may be processed outside the European Economic Area.</p>
+        <p>Such transfers are subject to appropriate safeguards under applicable data protection laws.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>User Rights</h2>
+        <p>Under the GDPR, you have the right to:</p>
+        <ul>
+            <li>Access your personal data</li>
+            <li>Request rectification or erasure</li>
+            <li>Object to processing</li>
+            <li>Lodge a complaint with a supervisory authority</li>
+        </ul>
+        <p>As this service does not store personal data, these rights may be limited in practice.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Security Measures</h2>
+        <p>We implement appropriate technical measures to protect data, including:</p>
+        <ul>
+            <li>HTTPS encryption</li>
+            <li>In-memory processing</li>
+            <li>Restricted logging</li>
+            <li>Rate limiting and abuse prevention</li>
+        </ul>
+    </div>
+
+    <div class="policy-section">
+        <h2>Open Source Components</h2>
+        <p>This service uses Microsoft MarkItDown, licensed under the MIT License. The full license text is available in the Open Source Licenses section of the main page.</p>
+    </div>
+
+    <div class="policy-section">
+        <h2>Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. Changes will be reflected on this page with an updated date.</p>
+    </div>
+
+{% endblock %}
