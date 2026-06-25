@@ -209,3 +209,6 @@ __marimo__/
 .idea/
 CLAUDE.md
 PROMT.md
+
+#Files converted counter json
+counter.json

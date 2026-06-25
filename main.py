@@ -1,6 +1,9 @@
 import os
 import io
 import re
+import sys
+import json
+from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -15,6 +18,32 @@ from markitdown import MarkItDown
 from dotenv import load_dotenv
 
 load_dotenv()
+
+if sys.platform == "win32" or not Path("/data").exists():
+    COUNTER_FILE = Path("counter.json")
+else:
+    COUNTER_FILE = Path("/data/counter.json")
+
+
+def read_counter() -> int:
+    try:
+        if COUNTER_FILE.exists():
+            data = json.loads(COUNTER_FILE.read_text())
+            return data.get("total", 0)
+        return 0
+    except Exception:
+        return 0
+
+
+def increment_counter() -> int:
+    try:
+        COUNTER_FILE.parent.mkdir(parents=True, exist_ok=True)
+        count = read_counter() + 1
+        COUNTER_FILE.write_text(json.dumps({"total": count}))
+        return count
+    except Exception:
+        return 0
+
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost")
 MAX_UPLOAD_SIZE = int(os.getenv("MAX_UPLOAD_SIZE", "20971520"))
@@ -212,6 +241,11 @@ async def terms(request: Request):
     return templates.TemplateResponse(request=request, name="terms.html")
 
 
+@app.get("/counter")
+async def get_counter():
+    return {"total": read_counter()}
+
+
 @app.get("/{filetype}-to-markdown", response_class=HTMLResponse)
 async def seo_page(request: Request, filetype: str):
     if filetype not in SEO_PAGES:
@@ -251,10 +285,12 @@ async def convert(request: Request, file: UploadFile = File(...)):
 
     safe_name = sanitize_filename(file.filename or "archivo")
     output_filename = os.path.splitext(safe_name)[0] + ".md"
+    count = increment_counter()
 
     return JSONResponse(content={
         "markdown": markdown_text,
         "filename": output_filename,
+        "total_conversions": count,
     })
 
 
