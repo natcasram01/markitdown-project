@@ -301,12 +301,6 @@ async def convert(request: Request, file: UploadFile = File(...)):
     })
 
 
-@app.get("/admin/set-counter/{value}")
-async def set_counter(value: int):
-    COUNTER_FILE.write_text(json.dumps({"total": value}))
-    return {"total": value, "file": str(COUNTER_FILE)}
-
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
