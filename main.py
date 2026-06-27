@@ -19,10 +19,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-if sys.platform == "win32" or not Path("/data").exists():
-    COUNTER_FILE = Path("counter.json")
-else:
+IS_PRODUCTION = os.getenv("RAILWAY_ENVIRONMENT") is not None
+
+if IS_PRODUCTION:
     COUNTER_FILE = Path("/data/counter.json")
+else:
+    COUNTER_FILE = Path("counter.json")
+
+try:
+    COUNTER_FILE.parent.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
 
 
 def read_counter() -> int:
@@ -292,6 +299,12 @@ async def convert(request: Request, file: UploadFile = File(...)):
         "filename": output_filename,
         "total_conversions": count,
     })
+
+
+@app.get("/admin/set-counter/{value}")
+async def set_counter(value: int):
+    COUNTER_FILE.write_text(json.dumps({"total": value}))
+    return {"total": value, "file": str(COUNTER_FILE)}
 
 
 if __name__ == "__main__":
